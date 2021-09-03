@@ -26,7 +26,7 @@ class Batch {
    * @returns {Boolean}
    */
   can_allocate(line) {
-    return this.available_quantity > line.qty;
+    return this.available_quantity >= line.qty;
   }
 }
 

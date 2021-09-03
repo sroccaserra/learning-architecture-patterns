@@ -18,10 +18,6 @@ describe('Allocating to a batch', function() {
 
 describe('Logic for what we cat allocate', function() {
 
-//  def test_can_allocate_if_available_equal_to_required():
-//      batch, line = make_batch_and_line("ELEGANT-LAMP", 2, 2)
-//      assert batch.can_allocate(line)
-//
 //  def test_cannot_allocate_if_skus_do_not_match():
 //      batch = Batch("batch-001", "UNCOMFORTABLE-CHAIR", 100OrderLine(), eta=None)
 //      different_sku_line = OrderLine("order-123", "EXPENSIVE-TOASTER", 10)
@@ -35,6 +31,11 @@ describe('Logic for what we cat allocate', function() {
   it('cannot allocate if available smaller than required', function() {
       const [large_batch, small_line] = make_batch_and_line('ELEGANT-LAMP', 2, 20);
       expect(large_batch.can_allocate(small_line)).to.be.false;
+  });
+
+  it('can allocate if available equal to required', function() {
+      const [large_batch, small_line] = make_batch_and_line('ELEGANT-LAMP', 2, 2);
+      expect(large_batch.can_allocate(small_line)).to.be.true;
   });
 });
 
