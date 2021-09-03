@@ -26,10 +26,9 @@ class Batch {
    * @returns {Boolean}
    */
   can_allocate(line) {
-    return true;
+    return this.available_quantity > line.qty;
   }
 }
-
 
 module.exports = {
   Batch,

@@ -18,10 +18,6 @@ describe('Allocating to a batch', function() {
 
 describe('Logic for what we cat allocate', function() {
 
-//  def test_cannot_allocate_if_available_smaller_than_required():
-//      small_batch, large_line = make_batch_and_line("ELEGANT-LAMP", 2, 20)
-//      assert small_batch.can_allocate(large_line) is False
-//
 //  def test_can_allocate_if_available_equal_to_required():
 //      batch, line = make_batch_and_line("ELEGANT-LAMP", 2, 2)
 //      assert batch.can_allocate(line)
@@ -34,6 +30,11 @@ describe('Logic for what we cat allocate', function() {
   it('can allocate if available greater than required', function() {
       const [large_batch, small_line] = make_batch_and_line('ELEGANT-LAMP', 20, 2);
       expect(large_batch.can_allocate(small_line)).to.be.true;
+  });
+
+  it('cannot allocate if available smaller than required', function() {
+      const [large_batch, small_line] = make_batch_and_line('ELEGANT-LAMP', 2, 20);
+      expect(large_batch.can_allocate(small_line)).to.be.false;
   });
 });
 
