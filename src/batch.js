@@ -11,6 +11,7 @@ class Batch {
    * @param {Date} obj.eta
    */
   constructor(ref, sku, {qty, eta}) {
+    this.sku = sku;
     this.available_quantity = qty;
   }
 
@@ -26,6 +27,9 @@ class Batch {
    * @returns {Boolean}
    */
   can_allocate(line) {
+    if (this.sku != line.sku) {
+      return false
+    }
     return this.available_quantity >= line.qty;
   }
 }
