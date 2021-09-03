@@ -20,6 +20,14 @@ class Batch {
   allocate(line) {
     this.available_quantity -= line.qty;
   }
+
+  /**
+   * @param {OrderLine} line
+   * @returns {Boolean}
+   */
+  can_allocate(line) {
+    return true;
+  }
 }
 
 
