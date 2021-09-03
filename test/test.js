@@ -1,3 +1,5 @@
+// @ts-check
+
 const { expect } = require('chai');
 
 const { Batch } = require('../src/batch');

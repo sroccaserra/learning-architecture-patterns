@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "typecheck": "tsc --project tsconfig.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.7.10",
     "chai": "^4.3.4",
     "mocha": "^9.1.1",
     "typescript": "^4.4.2"
