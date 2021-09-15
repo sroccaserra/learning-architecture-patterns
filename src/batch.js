@@ -1,5 +1,7 @@
 // @ts-check
 
+const _ = require('lodash');
+
 /** @typedef {import('./order-line').OrderLine} OrderLine */
 
 class Batch {
@@ -8,12 +10,14 @@ class Batch {
    * @param {string} sku
    * @param {object} obj
    * @param {number} obj.qty
-   * @param {Date} obj.eta
+   * @param {Date|null} obj.eta
    */
   constructor(ref, sku, {qty, eta}) {
     this.sku = sku;
     this._purchased_quantity = qty;
     this._allocations = [];
+    this.eta = eta;
+    this.ref = ref;
   }
 
   /** @returns {number} */
@@ -43,7 +47,10 @@ class Batch {
    */
   can_allocate(line) {
     if (this.sku != line.sku) {
-      return false
+      return false;
+    }
+    if (this._allocations.some((allocated_line) => allocated_line.equals(line))) {
+      return false;
     }
     return this.available_quantity >= line.qty;
   }
@@ -56,6 +63,19 @@ class Batch {
   }
 }
 
+/**
+ * @param {OrderLine} line
+ * @param {Batch[]} batches
+ * @returns {string}
+ */
+function allocate(line, batches) {
+  const sorted = _.orderBy(batches, [(batch) => batch.eta ? 1 : 0, (batch) => batch.eta], ['asc']);
+  sorted[0].allocate(line);
+
+  return ''
+}
+
 module.exports = {
   Batch,
+  allocate,
 }

@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 
-const { Batch } = require('../src/batch');
+const { Batch, allocate } = require('../src/batch');
 const { OrderLine } = require('../src/order-line');
 
 describe('Allocating to a batch', function() {
@@ -38,6 +38,12 @@ describe('Logic for allocation', function() {
     expect(batch.can_allocate(line)).to.be.false;
   });
 
+  it('is idempotent', function() {
+    const [batch, line] = make_batch_and_line('ANGULAR-DESK', 20, 2);
+    batch.allocate(line)
+    batch.allocate(line);
+    expect(batch.available_quantity).to.equal(18);
+  });
 });
 
 describe('Logic for deallocation', function() {
@@ -54,6 +60,73 @@ describe('Logic for deallocation', function() {
     expect(batch.available_quantity).to.equal(20);
   });
 });
+
+describe('Stocks', function() {
+  it('prefers current stock batches to shipments 1/2', function() {
+    const tomorrow = get_tomorrow();
+    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', {qty: 100, eta: null});
+    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 100, eta: tomorrow});
+    const line = new OrderLine('oref', 'RETRO-CLOCK', 10);
+
+    allocate(line, [in_stock_batch, shipment_batch]);
+
+    expect(in_stock_batch.available_quantity).to.equal(90)
+    expect(shipment_batch.available_quantity).to.equal(100)
+  });
+
+  it('prefers current stock batches to shipments 2/2', function() {
+    const tomorrow = get_tomorrow();
+    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', {qty: 100, eta: null});
+    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 100, eta: tomorrow});
+    const line = new OrderLine('oref', 'RETRO-CLOCK', 10);
+
+    allocate(line, [shipment_batch, in_stock_batch]);
+
+    expect(in_stock_batch.available_quantity).to.equal(90)
+    expect(shipment_batch.available_quantity).to.equal(100)
+  });
+
+  it('prefers earlier batches', function() {
+    const today = get_today();
+    const tomorrow = get_tomorrow();
+    const later = get_later_date();
+    const earliest = new Batch('speedy-batch', 'MINIMALIST-SPOON', {qty: 100, eta: today});
+    const medium = new Batch('normal-batch', 'MINIMALIST-SPOON', {qty: 100, eta: tomorrow});
+    const latest = new Batch('slow-batch', 'MINIMALIST-SPOON', {qty: 100, eta: later});
+    const line = new OrderLine('oref', 'MINIMALIST-SPOON', 10);
+
+    allocate(line, [medium, earliest, latest]);
+
+    expect(earliest.available_quantity).to.equal(90)
+    expect(medium.available_quantity).to.equal(100)
+    expect(latest.available_quantity).to.equal(100)
+  });
+});
+
+ /** @returns {Date} */
+function get_today() {
+  return get_date(0)
+}
+
+ /** @returns {Date} */
+function get_tomorrow() {
+  return get_date(1)
+}
+
+ /** @returns {Date} */
+function get_later_date() {
+  return get_date(10)
+}
+
+/**
+ * @param {number} days
+ * @returns {Date}
+  * */
+function get_date(days) {
+    const result = new Date();
+    result.setDate(result.getDate() + days);
+    return result;
+}
 
 /** @returns {[Batch, OrderLine]} */
 function make_batch_and_line(sku, batch_qty, line_qty) {
