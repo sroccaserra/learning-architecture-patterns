@@ -11,6 +11,13 @@ class OrderLine {
     this.sku = sku;
     this.qty = qty;
   }
+
+  equals(line) {
+    return line instanceof OrderLine &&
+      this.order_id === line.order_id &&
+      this.sku === line.sku &&
+      this.qty === line.qty
+  }
 }
 
 module.exports = {

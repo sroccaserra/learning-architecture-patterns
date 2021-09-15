@@ -12,14 +12,29 @@ class Batch {
    */
   constructor(ref, sku, {qty, eta}) {
     this.sku = sku;
-    this.available_quantity = qty;
+    this._purchased_quantity = qty;
+    this._allocations = [];
+  }
+
+  /** @returns {number} */
+  get available_quantity() {
+    return this._purchased_quantity - this.allocated_quantity;
+  }
+
+  /** @returns {number} */
+  get allocated_quantity() {
+    let result = 0;
+    this._allocations.forEach((line) => {result += line.qty});
+    return result;
   }
 
   /**
    * @param {OrderLine} line
    */
   allocate(line) {
-    this.available_quantity -= line.qty;
+    if (this.can_allocate(line)) {
+      this._allocations.push(line);
+    }
   }
 
   /**
@@ -31,6 +46,13 @@ class Batch {
       return false
     }
     return this.available_quantity >= line.qty;
+  }
+
+  /** @param {OrderLine} line */
+  deallocate(line) {
+    this._allocations = this._allocations.filter((allocated_line) => {
+       return !allocated_line.equals(line);
+    })
   }
 }
 
