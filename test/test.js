@@ -101,6 +101,17 @@ describe('Stocks', function() {
     expect(medium.available_quantity).to.equal(100)
     expect(latest.available_quantity).to.equal(100)
   });
+
+  it('returns allocated batch ref', function() {
+    const tomorrow = get_tomorrow();
+    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', {qty: 100, eta: null});
+    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 100, eta: tomorrow});
+    const line = new OrderLine('oref', 'RETRO-CLOCK', 10);
+
+    const allocation = allocate(line, [in_stock_batch, shipment_batch]);
+
+    expect(allocation).to.equal(in_stock_batch.ref)
+  });
 });
 
  /** @returns {Date} */

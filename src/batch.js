@@ -70,9 +70,10 @@ class Batch {
  */
 function allocate(line, batches) {
   const sorted = _.orderBy(batches, [(batch) => batch.eta ? 1 : 0, (batch) => batch.eta], ['asc']);
-  sorted[0].allocate(line);
+  const batch = sorted[0];
+  batch.allocate(line);
 
-  return ''
+  return batch.ref
 }
 
 module.exports = {
