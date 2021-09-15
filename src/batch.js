@@ -4,6 +4,35 @@ const _ = require('lodash');
 
 /** @typedef {import('./order-line').OrderLine} OrderLine */
 
+/**
+ * @param {OrderLine} line
+ * @param {Batch[]} batches
+ * @returns {string}
+ */
+function allocate(line, batches) {
+  const sorted = _.orderBy(batches, [(batch) => batch.eta ? 1 : 0, (batch) => batch.eta], ['asc']);
+
+  let batch_index = 0;
+  let can_allocate = false
+  let batch = sorted[batch_index];
+
+  while(batch_index < sorted.length) {
+    if (batch.can_allocate(line)) {
+      can_allocate = true;
+      break;
+    }
+    batch = sorted[batch_index];
+    batch_index += 1;
+  }
+
+  if (!can_allocate) {
+    throw new OutOfStockError(`Out of stock for sku ${line.sku}`)
+  }
+
+  batch.allocate(line);
+  return batch.ref
+}
+
 class Batch {
   /**
    * @param {string} ref
@@ -13,11 +42,11 @@ class Batch {
    * @param {Date|null} obj.eta
    */
   constructor(ref, sku, {qty, eta}) {
+    this.ref = ref;
     this.sku = sku;
+    this.eta = eta;
     this._purchased_quantity = qty;
     this._allocations = [];
-    this.eta = eta;
-    this.ref = ref;
   }
 
   /** @returns {number} */
@@ -63,40 +92,10 @@ class Batch {
   }
 }
 
-/**
- * @param {OrderLine} line
- * @param {Batch[]} batches
- * @returns {string}
- */
-function allocate(line, batches) {
-  const sorted = _.orderBy(batches, [(batch) => batch.eta ? 1 : 0, (batch) => batch.eta], ['asc']);
-
-  let batch_index = 0;
-  let can_allocate = false
-  let batch = sorted[batch_index];
-
-  while(batch_index < sorted.length) {
-    if (batch.can_allocate(line)) {
-      can_allocate = true;
-      break;
-    }
-    batch = sorted[batch_index];
-    batch_index += 1;
-  }
-
-  if (!can_allocate) {
-    throw new OutOfStockError(`Out of stock for sku ${line.sku}`)
-  }
-
-  batch.allocate(line);
-  return batch.ref
-}
-
-class OutOfStockError extends Error {
-}
+class OutOfStockError extends Error {}
 
 module.exports = {
-  Batch,
   allocate,
+  Batch,
   OutOfStockError,
-}
+};
