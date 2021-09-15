@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 
-const { Batch, allocate } = require('../src/batch');
+const { Batch, allocate, OutOfStockError } = require('../src/batch');
 const { OrderLine } = require('../src/order-line');
 
 describe('Allocating to a batch', function() {
@@ -22,9 +22,16 @@ describe('Logic for allocation', function() {
     expect(large_batch.can_allocate(small_line)).to.be.true;
   });
 
-  it('cannot allocate if available smaller than required', function() {
+  it('cannot allocate if available smaller than required 1/2', function() {
     const [large_batch, small_line] = make_batch_and_line('ELEGANT-LAMP', 2, 20);
     expect(large_batch.can_allocate(small_line)).to.be.false;
+  });
+
+  it('cannot allocate if available smaller than required 2/2', function() {
+    const batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 10, eta: get_tomorrow()});
+    allocate(new OrderLine('order1', 'RETRO-CLOCK', 10), [batch]);
+
+    expect(batch.can_allocate(new OrderLine('order2', 'RETRO-CLOCK', 1))).to.be.false;
   });
 
   it('can allocate if available equal to required', function() {
@@ -111,6 +118,13 @@ describe('Stocks', function() {
     const allocation = allocate(line, [in_stock_batch, shipment_batch]);
 
     expect(allocation).to.equal(in_stock_batch.ref)
+  });
+
+  it('raises out of stock exception if cannot allocate', function() {
+    const batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 10, eta: get_tomorrow()});
+    allocate(new OrderLine('order1', 'RETRO-CLOCK', 10), [batch]);
+
+    expect(() => allocate(new OrderLine('order2', 'RETRO-CLOCK', 1), [batch])).to.throw(OutOfStockError);
   });
 });
 
