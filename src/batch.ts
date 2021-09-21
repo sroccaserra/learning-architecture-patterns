@@ -1,15 +1,8 @@
-// @ts-check
-
 const _ = require('lodash');
 
-/** @typedef {import('./order-line').OrderLine} OrderLine */
+import {OrderLine} from './order-line';
 
-/**
- * @param {OrderLine} line
- * @param {Batch[]} batches
- * @returns {string}
- */
-function allocate(line, batches) {
+export function allocate(line: OrderLine, batches: Batch[]): string {
   const sorted = _.orderBy(batches, [(batch) => batch.eta ? 1 : 0, (batch) => batch.eta], ['asc']);
 
   let batch_index = 0;
@@ -33,14 +26,13 @@ function allocate(line, batches) {
   return batch.ref
 }
 
-class Batch {
-  /**
-   * @param {string} ref
-   * @param {string} sku
-   * @param {object} obj
-   * @param {number} obj.qty
-   * @param {Date|null} obj.eta
-   */
+export class Batch {
+  public ref: string
+  public sku: string
+  public eta: Date|null
+  private _purchased_quantity: number
+  private _allocations: OrderLine[]
+
   constructor(ref, sku, {qty, eta}) {
     this.ref = ref;
     this.sku = sku;
@@ -92,10 +84,4 @@ class Batch {
   }
 }
 
-class OutOfStockError extends Error {}
-
-module.exports = {
-  allocate,
-  Batch,
-  OutOfStockError,
-};
+export class OutOfStockError extends Error {}

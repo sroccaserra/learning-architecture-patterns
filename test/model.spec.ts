@@ -1,9 +1,7 @@
-// @ts-check
+import { expect } from 'chai';
 
-const { expect } = require('chai');
-
-const { Batch, allocate, OutOfStockError } = require('../src/batch');
-const { OrderLine } = require('../src/order-line');
+import { Batch, allocate, OutOfStockError } from '../src/batch';
+import { OrderLine } from '../src/order-line';
 
 describe('Allocating to a batch', function() {
   it('reduces the available quantity', function() {
@@ -128,33 +126,25 @@ describe('Stocks', function() {
   });
 });
 
- /** @returns {Date} */
-function get_today() {
+function get_today(): Date {
   return get_date(0)
 }
 
- /** @returns {Date} */
-function get_tomorrow() {
+function get_tomorrow(): Date {
   return get_date(1)
 }
 
- /** @returns {Date} */
-function get_later_date() {
+function get_later_date(): Date {
   return get_date(10)
 }
 
-/**
- * @param {number} days
- * @returns {Date}
-  * */
-function get_date(days) {
+function get_date(days: number): Date {
     const result = new Date();
     result.setDate(result.getDate() + days);
     return result;
 }
 
-/** @returns {[Batch, OrderLine]} */
-function make_batch_and_line(sku, batch_qty, line_qty) {
+function make_batch_and_line(sku: string, batch_qty: number, line_qty: number): [Batch, OrderLine] {
   return [
     new Batch('batch-001', sku, {qty: batch_qty, eta: new Date()}),
     new OrderLine('order-123', sku, line_qty),

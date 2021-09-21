@@ -4,8 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "compile": "tsc --declaration",
+    "prepublish": "npm run compile",
+    "test": "mocha --require ts-node/register --extension ts --spec test/**/*.spec.ts",
     "typecheck": "tsc --project tsconfig.json"
+  },
+  "directories": {
+    "lib": "./lib",
+    "src": "./src",
+    "test": "./test"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +22,7 @@
     "@types/node": "^16.7.10",
     "chai": "^4.3.4",
     "mocha": "^9.1.1",
+    "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
   },
   "dependencies": {

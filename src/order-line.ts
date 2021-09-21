@@ -1,25 +1,18 @@
-// @ts-check
+export class OrderLine {
+  public order_id: string
+  public sku: string
+  public qty: number
 
-class OrderLine {
-  /**
-   * @param {string} order_id
-   * @param {string} sku
-   * @param {number} qty
-   */
-  constructor(order_id, sku, qty) {
+  constructor(order_id: string, sku: string, qty: number) {
     this.order_id = order_id;
     this.sku = sku;
     this.qty = qty;
   }
 
-  equals(line) {
+  equals(line: OrderLine) {
     return line instanceof OrderLine &&
       this.order_id === line.order_id &&
       this.sku === line.sku &&
       this.qty === line.qty
   }
-}
-
-module.exports = {
-  OrderLine,
 }
