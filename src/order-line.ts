@@ -9,7 +9,7 @@ export class OrderLine {
     this.qty = qty;
   }
 
-  equals(line: OrderLine) {
+  equals(line: OrderLine): boolean {
     return line instanceof OrderLine &&
       this.order_id === line.order_id &&
       this.sku === line.sku &&

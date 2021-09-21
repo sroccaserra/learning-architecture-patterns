@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import * as _ from 'lodash';
 
 import {OrderLine} from './order-line';
 
@@ -33,7 +33,7 @@ export class Batch {
   private _purchased_quantity: number
   private _allocations: OrderLine[]
 
-  constructor(ref, sku, {qty, eta}) {
+  constructor(ref: string, sku: string, {qty, eta}: {qty: number, eta: Date|null}) {
     this.ref = ref;
     this.sku = sku;
     this.eta = eta;
@@ -41,32 +41,23 @@ export class Batch {
     this._allocations = [];
   }
 
-  /** @returns {number} */
-  get available_quantity() {
+  get available_quantity(): number {
     return this._purchased_quantity - this.allocated_quantity;
   }
 
-  /** @returns {number} */
-  get allocated_quantity() {
+  get allocated_quantity(): number {
     let result = 0;
     this._allocations.forEach((line) => {result += line.qty});
     return result;
   }
 
-  /**
-   * @param {OrderLine} line
-   */
-  allocate(line) {
+  allocate(line: OrderLine): void {
     if (this.can_allocate(line)) {
       this._allocations.push(line);
     }
   }
 
-  /**
-   * @param {OrderLine} line
-   * @returns {Boolean}
-   */
-  can_allocate(line) {
+  can_allocate(line: OrderLine): boolean {
     if (this.sku != line.sku) {
       return false;
     }
@@ -76,8 +67,7 @@ export class Batch {
     return this.available_quantity >= line.qty;
   }
 
-  /** @param {OrderLine} line */
-  deallocate(line) {
+  deallocate(line: OrderLine): void {
     this._allocations = this._allocations.filter((allocated_line) => {
        return !allocated_line.equals(line);
     })
