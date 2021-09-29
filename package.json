@@ -8,6 +8,8 @@
     "lint": "eslint . --ext .ts",
     "prepublish": "npm run compile",
     "test": "mocha --require ts-node/register --extension ts --spec test/**/*.spec.ts",
+    "test:unit": "mocha --require ts-node/register --extension ts --spec test/unit/**/*.spec.ts",
+    "test:integration": "mocha --require ts-node/register --extension ts --spec test/integration/**/*.spec.ts",
     "typecheck": "tsc --project tsconfig.json"
   },
   "directories": {
@@ -30,6 +32,8 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "knex": "^0.95.11",
+    "lodash": "^4.17.21",
+    "pg": "^8.7.1"
   }
 }
