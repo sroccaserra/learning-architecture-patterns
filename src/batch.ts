@@ -26,14 +26,16 @@ export function allocate(line: OrderLine, batches: Batch[]): string {
   return batch.ref
 }
 
+export type Eta = Date | null;
+
 export class Batch {
   public ref: string
   public sku: string
-  public eta: Date|null
+  public eta: Eta
   private _purchased_quantity: number
   private _allocations: OrderLine[]
 
-  constructor(ref: string, sku: string, {qty, eta}: {qty: number, eta: Date|null}) {
+  constructor(ref: string, sku: string, qty: number, eta: Eta) {
     this.ref = ref;
     this.sku = sku;
     this.eta = eta;

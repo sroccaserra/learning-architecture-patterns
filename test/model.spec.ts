@@ -5,7 +5,7 @@ import { OrderLine } from '../src/order-line';
 
 describe('Allocating to a batch', function() {
   it('reduces the available quantity', function() {
-    const batch = new Batch('batch-001', 'SMALL-TABLE', {qty: 20, eta: new Date()})
+    const batch = new Batch('batch-001', 'SMALL-TABLE', 20, new Date())
     const line = new OrderLine('order-ref', 'SMALL-TABLE', 2)
 
     batch.allocate(line);
@@ -26,7 +26,7 @@ describe('Logic for allocation', function() {
   });
 
   it('cannot allocate if available smaller than required 2/2', function() {
-    const batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 10, eta: get_tomorrow()});
+    const batch = new Batch('shipment-batch', 'RETRO-CLOCK', 10, get_tomorrow());
     allocate(new OrderLine('order1', 'RETRO-CLOCK', 10), [batch]);
 
     expect(batch.can_allocate(new OrderLine('order2', 'RETRO-CLOCK', 1))).to.be.false;
@@ -38,7 +38,7 @@ describe('Logic for allocation', function() {
   });
 
   it('cannot allocate if sku do not match', function() {
-    const batch = new Batch('batch-001', 'UNCOMFORTABLE-CHAIR', {qty: 100, eta: new Date()})
+    const batch = new Batch('batch-001', 'UNCOMFORTABLE-CHAIR', 100, new Date())
     const line = new OrderLine('order-123', 'EXPENSIVE-TOASTER', 10)
     expect(batch.can_allocate(line)).to.be.false;
   });
@@ -69,8 +69,8 @@ describe('Logic for deallocation', function() {
 describe('Stocks', function() {
   it('prefers current stock batches to shipments 1/2', function() {
     const tomorrow = get_tomorrow();
-    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', {qty: 100, eta: null});
-    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 100, eta: tomorrow});
+    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', 100, null);
+    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', 100, tomorrow);
     const line = new OrderLine('oref', 'RETRO-CLOCK', 10);
 
     allocate(line, [in_stock_batch, shipment_batch]);
@@ -81,8 +81,8 @@ describe('Stocks', function() {
 
   it('prefers current stock batches to shipments 2/2', function() {
     const tomorrow = get_tomorrow();
-    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', {qty: 100, eta: null});
-    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 100, eta: tomorrow});
+    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', 100, null);
+    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', 100, tomorrow);
     const line = new OrderLine('oref', 'RETRO-CLOCK', 10);
 
     allocate(line, [shipment_batch, in_stock_batch]);
@@ -95,9 +95,9 @@ describe('Stocks', function() {
     const today = get_today();
     const tomorrow = get_tomorrow();
     const later = get_later_date();
-    const earliest = new Batch('speedy-batch', 'MINIMALIST-SPOON', {qty: 100, eta: today});
-    const medium = new Batch('normal-batch', 'MINIMALIST-SPOON', {qty: 100, eta: tomorrow});
-    const latest = new Batch('slow-batch', 'MINIMALIST-SPOON', {qty: 100, eta: later});
+    const earliest = new Batch('speedy-batch', 'MINIMALIST-SPOON', 100, today);
+    const medium = new Batch('normal-batch', 'MINIMALIST-SPOON', 100, tomorrow);
+    const latest = new Batch('slow-batch', 'MINIMALIST-SPOON', 100, later);
     const line = new OrderLine('oref', 'MINIMALIST-SPOON', 10);
 
     allocate(line, [medium, earliest, latest]);
@@ -109,8 +109,8 @@ describe('Stocks', function() {
 
   it('returns allocated batch ref', function() {
     const tomorrow = get_tomorrow();
-    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', {qty: 100, eta: null});
-    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 100, eta: tomorrow});
+    const in_stock_batch = new Batch('in-stock-batch', 'RETRO-CLOCK', 100, null);
+    const shipment_batch = new Batch('shipment-batch', 'RETRO-CLOCK', 100, tomorrow);
     const line = new OrderLine('oref', 'RETRO-CLOCK', 10);
 
     const allocation = allocate(line, [in_stock_batch, shipment_batch]);
@@ -119,7 +119,7 @@ describe('Stocks', function() {
   });
 
   it('raises out of stock exception if cannot allocate', function() {
-    const batch = new Batch('shipment-batch', 'RETRO-CLOCK', {qty: 10, eta: get_tomorrow()});
+    const batch = new Batch('shipment-batch', 'RETRO-CLOCK', 10, get_tomorrow());
     allocate(new OrderLine('order1', 'RETRO-CLOCK', 10), [batch]);
 
     expect(() => allocate(new OrderLine('order2', 'RETRO-CLOCK', 1), [batch])).to.throw(OutOfStockError);
@@ -146,7 +146,7 @@ function get_date(days: number): Date {
 
 function make_batch_and_line(sku: string, batch_qty: number, line_qty: number): [Batch, OrderLine] {
   return [
-    new Batch('batch-001', sku, {qty: batch_qty, eta: new Date()}),
+    new Batch('batch-001', sku, batch_qty, new Date()),
     new OrderLine('order-123', sku, line_qty),
   ]
 }
