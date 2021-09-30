@@ -7,9 +7,9 @@
     "compile": "tsc --declaration",
     "lint": "eslint . --ext .ts",
     "prepublish": "npm run compile",
-    "test": "mocha --require ts-node/register --extension ts --spec test/**/*.spec.ts",
-    "test:unit": "mocha --require ts-node/register --extension ts --spec test/unit/**/*.spec.ts",
-    "test:integration": "mocha --require ts-node/register --extension ts --spec test/integration/**/*.spec.ts",
+    "test": "NODE_ENV=test mocha --require ts-node/register --extension ts --spec test/**/*.spec.ts",
+    "test:unit": "NODE_ENV=test mocha --require ts-node/register --extension ts --spec test/unit/**/*.spec.ts",
+    "test:integration": "NODE_ENV=test mocha --require ts-node/register --extension ts --spec test/integration/**/*.spec.ts",
     "typecheck": "tsc --project tsconfig.json"
   },
   "directories": {
