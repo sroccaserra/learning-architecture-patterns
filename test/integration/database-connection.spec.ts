@@ -1,5 +1,6 @@
-import { expect } from 'chai';
-import { knex } from '../../src/infrastructure/database';
+import {expect} from 'chai';
+
+import {knex} from '../../src/infrastructure/database';
 
 after(function() {
   knex.destroy();

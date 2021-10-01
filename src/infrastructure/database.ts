@@ -8,3 +8,7 @@ const config = knexConfigurations[node_env];
 const myknex = knex(config);
 
 export {myknex as knex};
+
+export async function clearDatabase(): Promise<void> {
+  return myknex.raw('delete from batches');
+}

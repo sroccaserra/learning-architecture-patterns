@@ -43,6 +43,15 @@ export class Batch {
     this._allocations = [];
   }
 
+  getState(): BatchState {
+    return {
+      ref: this.ref,
+      sku: this.sku,
+      eta: this.eta,
+      purchased_quantity: this._purchased_quantity,
+    }
+  }
+
   get available_quantity(): number {
     return this._purchased_quantity - this.allocated_quantity;
   }
@@ -74,6 +83,16 @@ export class Batch {
        return !allocated_line.equals(line);
     })
   }
+
+}
+
+export type BatchState = Readonly<BatchStateFields>;
+
+interface BatchStateFields {
+  ref: string;
+  sku: string;
+  eta: Eta;
+  purchased_quantity: number;
 }
 
 export class OutOfStockError extends Error {}
