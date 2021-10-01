@@ -1,5 +1,5 @@
-import {Batch} from '../batch';
-import {BatchRepository} from '../batch-repository';
+import {Batch} from '../domain/batch';
+import {BatchRepository} from '../domain/batch-repository';
 import {knex} from './database';
 
 export class BatchSqlRepository implements BatchRepository {

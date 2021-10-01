@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 
-import {Batch} from '../../src/batch';
+import {Batch} from '../../src/domain/batch';
 
 import {knex, clearDatabase} from '../../src/infrastructure/database';
 import {BatchSqlRepository} from '../../src/infrastructure/batch-sql-repository';

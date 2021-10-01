@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { Batch, allocate, OutOfStockError } from '../../src/batch';
-import { OrderLine } from '../../src/order-line';
+import { Batch, allocate, OutOfStockError } from '../../src/domain/batch';
+import { OrderLine } from '../../src/domain/order-line';
 
 describe('Allocating to a batch', function() {
   it('reduces the available quantity', function() {
