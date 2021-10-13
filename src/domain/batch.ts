@@ -23,20 +23,20 @@ export function allocate(line: OrderLine, batches: Batch[]): string {
   }
 
   batch.allocate(line);
-  return batch.ref
+  return batch.reference
 }
 
 export type Eta = Date | null;
 
 export class Batch {
-  public ref: string
+  public reference: string
   public sku: string
   public eta: Eta
   private _purchased_quantity: number
   private _allocations: OrderLine[]
 
   constructor(ref: string, sku: string, qty: number, eta: Eta) {
-    this.ref = ref;
+    this.reference = ref;
     this.sku = sku;
     this.eta = eta;
     this._purchased_quantity = qty;
@@ -45,11 +45,20 @@ export class Batch {
 
   getState(): BatchState {
     return {
-      ref: this.ref,
+      reference: this.reference,
       sku: this.sku,
       eta: this.eta,
       purchased_quantity: this._purchased_quantity,
     }
+  }
+
+  static fromState(state: BatchState): Batch {
+    return new Batch(
+      state.reference,
+      state.sku,
+      state.purchased_quantity,
+      state.eta
+    );
   }
 
   get available_quantity(): number {
@@ -89,10 +98,10 @@ export class Batch {
 export type BatchState = Readonly<BatchStateFields>;
 
 interface BatchStateFields {
-  ref: string;
+  reference: string;
   sku: string;
-  eta: Eta;
   purchased_quantity: number;
+  eta: Eta;
 }
 
 export class OutOfStockError extends Error {}

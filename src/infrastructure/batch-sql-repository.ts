@@ -5,12 +5,11 @@ import {knex} from './database';
 export class BatchSqlRepository implements BatchRepository {
   async add(batch: Batch): Promise<void> {
     const state = batch.getState();
+    return knex('batches').insert(state);
+  }
 
-    return knex('batches').insert({
-        reference: state.ref,
-        sku: state.sku,
-        purchased_quantity: state.purchased_quantity,
-        eta: state.eta,
-      });
+  async get(reference: string): Promise<Batch> {
+    const data = await knex('batches').where({reference: reference}).first();
+    return Batch.fromState(data);
   }
 }

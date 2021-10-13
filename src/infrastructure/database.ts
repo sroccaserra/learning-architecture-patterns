@@ -10,5 +10,7 @@ const myknex = knex(config);
 export {myknex as knex};
 
 export async function clearDatabase(): Promise<void> {
-  return myknex.raw('delete from batches');
+  await myknex.raw('delete from allocations');
+  await myknex.raw('delete from batches');
+  await myknex.raw('delete from order_lines');
 }

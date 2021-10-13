@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+import {Knex} from 'knex';
 
 import {Batch} from '../../src/domain/batch';
 
@@ -26,4 +27,44 @@ describe('Batch Repository', function() {
       eta: null
     }]);
   });
+
+  it('can retrieve a batch with allocations', async function() {
+    const orderline_id: number = await insert_order_line(knex);
+    const batch1_id = await insert_batch(knex, 'batch1');
+    await insert_batch(knex, 'batch2');
+    await insert_allocation(knex, orderline_id, batch1_id);
+
+    const repo = new BatchSqlRepository();
+    const retrieved = await repo.get('batch1');
+
+    expect(retrieved).to.deep.equal(new Batch('batch1', 'GENERIC-SOFA', 100, null));
+  });
 });
+
+async function insert_order_line(knex: Knex): Promise<number> {
+  const rows = await knex('order_lines').insert({
+    orderid: 'order1',
+    sku: 'GENERIC-SOFA',
+    qty: 12,
+  }).returning('id');
+
+  return rows[0];
+}
+
+async function insert_batch(knex: Knex, reference: string): Promise<number> {
+  const rows = await knex('batches').insert({
+    reference: reference,
+    sku: 'GENERIC-SOFA',
+    purchased_quantity: 100,
+    eta: null,
+  }).returning('id');
+
+  return rows[0];
+}
+
+async function insert_allocation(knex: Knex, orderline_id: number, batch_id: number): Promise<void> {
+  return knex('allocations').insert({
+    batch_id: batch_id,
+    orderline_id: orderline_id,
+  });
+}

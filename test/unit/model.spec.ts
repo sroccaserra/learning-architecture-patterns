@@ -115,7 +115,7 @@ describe('Stocks', function() {
 
     const allocation = allocate(line, [in_stock_batch, shipment_batch]);
 
-    expect(allocation).to.equal(in_stock_batch.ref)
+    expect(allocation).to.equal(in_stock_batch.reference)
   });
 
   it('raises out of stock exception if cannot allocate', function() {
@@ -123,6 +123,39 @@ describe('Stocks', function() {
     allocate(new OrderLine('order1', 'RETRO-CLOCK', 10), [batch]);
 
     expect(() => allocate(new OrderLine('order2', 'RETRO-CLOCK', 1), [batch])).to.throw(OutOfStockError);
+  });
+});
+
+describe('Batch state', function() {
+  it('returns its data for serialization', function() {
+    const batch = new Batch('batch1', 'CHAIR', 10, null);
+
+    const result = batch.getState();
+
+    expect(result).to.deep.equal({
+      reference: 'batch1',
+      sku: 'CHAIR',
+      purchased_quantity: 10,
+      eta: null,
+    })
+  });
+
+  it('deserializes from raw data', function() {
+    const batch = Batch.fromState({
+      reference: 'batch1',
+      sku: 'CHAIR',
+      purchased_quantity: 10,
+      eta: null,
+    });
+
+    const result = batch.getState();
+
+    expect(result).to.deep.equal({
+      reference: 'batch1',
+      sku: 'CHAIR',
+      purchased_quantity: 10,
+      eta: null,
+    })
   });
 });
 
