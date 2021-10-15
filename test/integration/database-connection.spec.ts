@@ -1,22 +1,22 @@
 import {expect} from 'chai';
 
-import {transaction} from '../conftest';
+import {createSession} from '../conftest';
 
 describe('Database connection', function() {
-  let trx;
+  let session;
 
   beforeEach(async function() {
-    trx = await transaction();
+    session = await createSession();
   });
 
   afterEach(async function() {
-    trx.rollback();
+    session.close();
   });
 
   it('can load data', async function() {
     const query = 'select 1 as n;';
 
-    const result = await trx.raw(query);
+    const result = await session.trx.raw(query);
 
     expect(result.rows).to.deep.equal([{n: 1}]);
   });
