@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 
-import {knex} from '../../src/infrastructure/database';
+import {knex} from '../conftest';
 
 after(function() {
   knex.destroy();

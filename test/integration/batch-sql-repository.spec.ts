@@ -3,7 +3,7 @@ import {Knex} from 'knex';
 
 import {Batch} from '../../src/domain/batch';
 
-import {knex, clearDatabase} from '../../src/infrastructure/database';
+import {knex, clearDatabase} from '../conftest';
 import {BatchSqlRepository} from '../../src/infrastructure/batch-sql-repository';
 
 beforeEach(function() {
