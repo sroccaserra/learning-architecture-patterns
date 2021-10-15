@@ -13,7 +13,7 @@ beforeEach(function() {
 describe('Batch Repository', function() {
   it('can save a batch', async function() {
     const batch = new Batch("batch1", "RUSTY-SOAPDISH", 100, null);
-    const repo = new BatchSqlRepository();
+    const repo = new BatchSqlRepository(knex);
 
     await repo.add(batch);
 
@@ -34,12 +34,15 @@ describe('Batch Repository', function() {
     await insert_batch(knex, 'batch2');
     await insert_allocation(knex, orderline_id, batch1_id);
 
-    const repo = new BatchSqlRepository();
+    const repo = new BatchSqlRepository(knex);
     const retrieved = await repo.get('batch1');
 
     expect(retrieved).to.deep.equal(new Batch('batch1', 'GENERIC-SOFA', 100, null));
   });
 });
+
+///
+// Setup functions
 
 async function insert_order_line(knex: Knex): Promise<number> {
   const rows = await knex('order_lines').insert({
