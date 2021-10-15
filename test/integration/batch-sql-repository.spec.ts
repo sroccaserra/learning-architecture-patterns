@@ -3,7 +3,7 @@ import {Knex} from 'knex';
 
 import {Batch} from '../../src/domain/batch';
 
-import {knex, clearDatabase} from '../conftest';
+import {transaction, clearDatabase} from '../conftest';
 import {BatchSqlRepository} from '../../src/infrastructure/batch-sql-repository';
 
 beforeEach(function() {
@@ -11,13 +11,23 @@ beforeEach(function() {
 });
 
 describe('Batch Repository', function() {
+  let trx;
+
+  beforeEach(async function() {
+    trx = await transaction();
+  });
+
+  afterEach(async function() {
+    trx.rollback();
+  });
+
   it('can save a batch', async function() {
     const batch = new Batch("batch1", "RUSTY-SOAPDISH", 100, null);
-    const repo = new BatchSqlRepository(knex);
+    const repo = new BatchSqlRepository(trx);
 
     await repo.add(batch);
 
-    const result = await knex('batches')
+    const result = await trx('batches')
       .select('reference', 'sku', 'purchased_quantity', 'eta');
 
     expect(result).to.deep.equal([{
@@ -29,12 +39,12 @@ describe('Batch Repository', function() {
   });
 
   it('can retrieve a batch with allocations', async function() {
-    const orderline_id: number = await insert_order_line(knex);
-    const batch1_id = await insert_batch(knex, 'batch1');
-    await insert_batch(knex, 'batch2');
-    await insert_allocation(knex, orderline_id, batch1_id);
+    const orderline_id: number = await insert_order_line(trx);
+    const batch1_id = await insert_batch(trx, 'batch1');
+    await insert_batch(trx, 'batch2');
+    await insert_allocation(trx, orderline_id, batch1_id);
 
-    const repo = new BatchSqlRepository(knex);
+    const repo = new BatchSqlRepository(trx);
     const retrieved = await repo.get('batch1');
 
     expect(retrieved).to.deep.equal(new Batch('batch1', 'GENERIC-SOFA', 100, null));

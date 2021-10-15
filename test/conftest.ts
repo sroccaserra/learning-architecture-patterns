@@ -1,10 +1,17 @@
-import knex from 'knex'
+import knex from 'knex';
+import {Knex} from 'knex';
 
 import knexConfigurations from '../knexfile';
 
 const myknex = knex(knexConfigurations.test);
 
-export {myknex as knex};
+after(function() {
+  myknex.destroy();
+});
+
+export async function transaction(): Promise<Knex.Transaction> {
+  return myknex.transaction();
+}
 
 export async function clearDatabase(): Promise<void> {
   await myknex.raw('delete from allocations');

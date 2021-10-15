@@ -1,0 +1,22 @@
+graph TD
+    Obj1(x Avoir un knex de test injectable)
+    Obj2(. Reprendre la main sur le commit)
+
+    A(x Déplacer la conf de test)
+    B(x Déplacer clearDatabase)
+    C(x Supprimer la conf de dev)
+    D(x Injecter knex dans les repositories)
+    E(x Fermer correctement les transactions)
+    F(x Quand un test échoue, fermer les transactions)
+    G(. Pouvoir faire un commit sans avoir à rouvrir une transaction)
+    H(. Avoir un wrapper qui expose une méthode commit et qui rouvre une transaction après le commit)
+
+    Obj1 --> Obj2
+    A --> Obj1
+    B --> A
+    C --> A
+    D --> A
+    E --> Obj2
+    F --> E
+    H --> G
+    G --> Obj2
